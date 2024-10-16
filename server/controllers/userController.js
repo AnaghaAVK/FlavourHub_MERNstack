@@ -21,52 +21,92 @@ export const create = async (req,res,next)=>
 
         //password hashing, befr storing into db, using bcript
          
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password,salt)
+        const saltRound = 10
+        const hashedPassword = bcrypt.hashSync(password,saltRound);
         //console.log(hashedPassword,"hashedPassword");
         
 
         const newUser = new User({
-            name,email,password:hashedPassword,mobile
+            name,email,password:hashedPassword,mobile,profilepic
         })
 
-        const savedUser = await newUser.save()
-        if(savedUser){
-            const token = await generateToken(savedUser._id)
-            res.cookie("token",token)
-            return res.status(200).json({message:"User registration Successgull",savedUser})
-        }
-       return res.status(400).json({error: "Somthing went wrong"})
+        const savedUser = await newUser.save();
+
+
+        const token = await generateToken(savedUser._id);
+        res.cookie("token",token)
+        return res.status(200).json({message:"User registration Successgull"});
+      
 
     } catch (error) {
         res.status(error.status || 500).json({error:error.message || "Internal Server Error"})
     }
-}
+};
 
 //Login
 
-export const login = async(req,res,next) =>{
+export const login = async (req, res, next) => {
     try {
-        const {email,password} = req.body
-        if(!email || !password){
-            return  res.status(400).json({message:"All fields required"})
-        }
-        const userExist = await User.findOne({email})
-
-        if(!userExist){
-            return res.status(400).json({error: "User does't exist"})
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ message: "all fields are required" });
         }
 
-        const passwordMatch = await bcrypt.compare(password,userExist.password)
-         if(!passwordMatch){
-            return res.status(400).json({error: "Password does't match"})
+        const userExist = await User.findOne({ email });
+        if (!userExist) {
+            return res.status(404).json({ success: false, message: "user does not exist" });
         }
-        const token = await generateToken(userExist._id)
-        res.cookie("token",token)
-        res.status(200).json({message:"Login Successfull"})
 
+        const passwordMatch = bcrypt.compareSync(password, userExist.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: "user not autherized" });
+        }
 
+        const token = generateToken(userExist._id);
+
+        res.cookie("token", token);
+        res.json({ success: true, message: "user login successfull" });
     } catch (error) {
-        res.status(error.status || 500).json({error:error.message || "Internal Server Error"})
+        console.log(error);
+        res.status(error.statusCode || 500).json(error.message || 'Internal server error')
     }
-}
+};
+
+//user profile
+
+export const userProfile = async (req, res, next) => {
+    try {
+
+        const {user}=req
+
+        const userData = await User.findById(user.id).select('-password')
+
+        res.json({ success: true, message: "user profile fetched", userData });
+    } catch (error) {
+        console.log(error);
+        res.status(error.statusCode || 500).json(error.message || 'Internal server error')
+    }
+};
+
+//user Logout
+export const userLogout = async (req, res, next) => {
+    try {
+
+        res.clearCookie('token')
+        res.json({ success: true, message: "user logged out" });
+    } catch (error) {
+        console.log(error);
+        res.status(error.statusCode || 500).json(error.message || 'Internal server error')
+    }
+};
+
+//check user
+export const checkUser = async (req, res, next) => {
+    try {
+
+        res.json({ success: true, message: "autherized user" });
+    } catch (error) {
+        console.log(error);
+        res.status(error.statusCode || 500).json(error.message || 'Internal server error')
+    }
+};

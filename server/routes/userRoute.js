@@ -1,11 +1,12 @@
 import express from 'express';
 import { create } from '../controllers/userController.js';
 import { login } from '../controllers/userController.js';
+import { userProfile } from '../controllers/userController.js';
+
 const router = express.Router();
 
 // router.post('/sign-up',(req,res,next)=>{
 //     console.log("welcome to sign in");
-    
 // })
 
 
@@ -13,13 +14,14 @@ const router = express.Router();
 
 router.post('/sign-up',create);
 
-router.post('/log-in',login)
+router.post('/log-in',login);
+
+router.get('/profile',userProfile);
+
 router.put('/profile-update',(req,res,next)=>{
 
 })
-router.get('/profile',(req,res,next)=>{
 
-})
 router.post('/logout',(req,res,next)=>{
 
 })

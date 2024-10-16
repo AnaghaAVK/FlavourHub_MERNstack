@@ -22,12 +22,12 @@ const adminSchema = new mongoose.Schema({
         required:true,
         minLength:6,
     },
-    // profilepic:{
-    //     type:String,
-    //     // image not store dirct to db, we can use cloudinary like platform to store images. and which give 
-    //     //corresponding url string to store into db.
-    //     default:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
-    // }
+    profilepic:{
+        type:String,
+        // image not store dirct to db, we can use cloudinary like platform to store images. and which give 
+        //corresponding url string to store into db.
+        default:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
+    }
 
   },
   {timestamps:true},

@@ -4,7 +4,7 @@ import { apiRouter } from './routes/index.js';
 import cookieparser from "cookie-parser"
 
 const app = express()
-const port = 4000
+const port = 3000
 
 
 connectDB();
@@ -13,10 +13,6 @@ connectDB();
 app.use(express.json());
 app.use(cookieparser());
 
-app.get('/', (req, res) => 
-{
-  res.send('Hello World!');
-})
 
 app.use('/api',apiRouter);
 
